@@ -12,7 +12,11 @@ io.on("connection", (socket) => {
     socket.on("chat", (arg) => {
         console.log("전송받은 데이터", arg);
         io.emit("chat", arg);
-    })
+    });
+
+    socket.on("join", (roomNm) => {
+
+    });
 });
 
 app.set("port", process.env.PORT || 3000);
@@ -22,11 +26,19 @@ nunjucks.configure("views", {
     watch:true,
 })
 
+app.get("/", (req, res, next) => {
+    res.render("main");
+})
+
 app.use(morgan("dev"));
 app.use(express.static(path.join(__dirname, "public")));
 
 
-app.get("/", (req, res, next) => {
+app.get("/chat", (req, res, next) => {
+
+    if (!req.query.room || !req.query.userNm) {
+        return res.send("<script>alert('방이름과 사용자명을 모두 입력하세요.');location.href='/';</script>");
+    }
     return res.render("chat");
 });
 
